@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'Amazon'
+    'Amazon',
+    'Platforms',
+    'Mapping'
+
 ]
 
 MIDDLEWARE = [
@@ -77,9 +80,9 @@ WSGI_APPLICATION = 'PO.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Ecomm',        
+        'NAME': 'Ecommerce',        
         'USER': 'postgres',         
-        'PASSWORD': 'Jivo@2025',    
+        'PASSWORD': '1234',    
         'HOST': 'localhost',            
         'PORT': '5432',                 
     }

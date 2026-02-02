@@ -1,14 +1,10 @@
 from rest_framework import serializers
-from .models import PurchaseOrderHeaders , PurchaseOrderLines , SKUMapping
+from .models import PurchaseOrderHeaders , PurchaseOrderLines
 
 class Importserializer(serializers.Serializer):
     file = serializers.FileField()
 
 
-class SKUMappingSerializer(serializers.Serializer):
-    class Meta:
-        model = SKUMapping
-        fields = '__all__'
 
 class PurchaseOrderLinesSerializer(serializers.ModelSerializer):
     class Meta:

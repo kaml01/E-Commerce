@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 from django.db import transaction
-from .models import PurchaseOrderHeaders, PurchaseOrderLines, SKUMapping
+from .models import PurchaseOrderHeaders, PurchaseOrderLines
 from datetime import datetime, timedelta , date
+from decimal import Decimal
 
 class utils:
     def calculate_item_status(row):
@@ -66,34 +67,6 @@ class utils:
 
 
 
-
-class MappingService:
-    @staticmethod
-    def sync_mappings(file_obj):
-        df = pd.read_excel(file_obj) if file_obj.name.endswith('.xlsx') else pd.read_csv(file_obj)
-
-        sync_count = 0
-        with transaction.atomic():
-            for _, row in df.iterrows():
-                asin = str(row.get('FORMAT SKU Code', '')).strip()
-                if not asin or asin.lower() == 'nan':
-                    continue
-
-                SKUMapping.objects.update_or_create(
-                    external_sku_code=asin,
-                    defaults={
-                        'sap_code': row.get('SKU SAP Code') if pd.notna(row.get('SKU SAP Code')) else 'NA',
-                        'sap_name': row.get('SKU SAP NAME') if pd.notna(row.get('SKU SAP NAME')) else 'NA',
-                        'category': row.get('Category') if pd.notna(row.get('Category')) else 'NA',
-                        'sub_category': row.get('Sub Category') if pd.notna(row.get('Sub Category')) else None,
-                        'uom': row.get('UOM') if pd.notna(row.get('UOM')) else 'NA',
-                        'case_pack' : row.get('Case Pack') if pd.notna(row.get('Case Pack')) else '0.00'
-                    }
-                )
-                sync_count += 1
-        return sync_count
-    
-
 class PurchaseServices:
     @staticmethod
     def parse_amazon_date(value):
@@ -148,6 +121,7 @@ class PurchaseServices:
                     # Lookup mapping info
                     asin = str(row.get('ASIN', '')).strip()
                     map_info = mapping_dict.get(asin)
+                
 
                     line_item_objects.append(PurchaseOrderLines(
                         purchase_order=po_header,
@@ -179,7 +153,6 @@ class PurchaseServices:
                         item_status=i_status
                     ))
 
-                # 4. Clean up old lines and Bulk Create new ones
                 PurchaseOrderLines.objects.filter(purchase_order=po_header).delete()
                 PurchaseOrderLines.objects.bulk_create(line_item_objects)
                 processed_count += 1

@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ApisConfig(AppConfig):
+class MappingConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apis'
+    name = 'Mapping'
