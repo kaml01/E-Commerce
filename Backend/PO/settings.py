@@ -16,6 +16,16 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+load_dotenv(BASE_DIR.parent / ".env")
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -79,14 +89,19 @@ WSGI_APPLICATION = 'PO.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Ecommerce',        
-        'USER': 'postgres',         
-        'PASSWORD': '1234',    
-        'HOST': 'localhost',            
-        'PORT': '5432',                 
+        'ENGINE': os.getenv("DB_ENGINE"),
+        'NAME': (
+            BASE_DIR / os.getenv("DB_NAME")
+            if os.getenv("DB_ENGINE") == "django.db.backends.sqlite3"
+            else os.getenv("DB_NAME")
+        ),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
+
 
 
 # Password validation
